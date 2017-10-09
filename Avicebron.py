@@ -3,6 +3,7 @@
 import yaml
 import asyncio
 import os
+import sys
 
 import discord
 from discord.ext import commands
@@ -17,6 +18,7 @@ bot = commands.Bot(command_prefix=config['prefix'], description=config['descript
 
 @bot.event
 async def on_ready():
+    print("Bot ready, loading extensions")
     for entry in os.listdir("extensions"):
         if os.path.isdir("extensions/{}".format(entry)):
             for extension in os.listdir("extensions/{}".format(entry)):
@@ -30,5 +32,19 @@ async def on_ready():
                 bot.load_extension("extensions.{}".format(entry[:-3]))
             except Exception as e:
                 print('Failed to load extension {}\n{}: {}'.format(entry, type(e).__name__, e))
+    print("Bot ready!")
+    if len(sys.argv) > 1:
+        try:
+            channel = bot.get_channel(int(sys.argv[1]))
+            await channel.send("Bot has restarted")
+        except:
+            pass
+
+@commands.has_permissions(administrator=True)
+@bot.command(hidden=True)
+async def restart(ctx):
+    """Restart the bot"""
+    await ctx.send("Restarting bot")
+    os.execv(__file__, [__file__, str(ctx.channel.id)])
 
 bot.run(config['token'])
