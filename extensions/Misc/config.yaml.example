@@ -1,0 +1,7 @@
+toggleable_channels: #Note: the channel or channgelgroup cannot be Ungrouped" 
+  Group 1:
+    channel-1: role-1
+    channel-2: role-2
+    channel-3: role-3
+  Ungrouped:
+    channel-4: role-4

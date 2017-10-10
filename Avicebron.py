@@ -19,6 +19,7 @@ bot = commands.Bot(command_prefix=config['prefix'], description=config['descript
 @bot.event
 async def on_ready():
     print("Bot ready, loading extensions")
+    # Extension loading code adapted from appu1232/discord-selfbot
     for entry in os.listdir("extensions"):
         if os.path.isdir("extensions/{}".format(entry)):
             for extension in os.listdir("extensions/{}".format(entry)):
@@ -32,7 +33,10 @@ async def on_ready():
                 bot.load_extension("extensions.{}".format(entry[:-3]))
             except Exception as e:
                 print('Failed to load extension {}\n{}: {}'.format(entry, type(e).__name__, e))
+
     print("Bot ready!")
+
+    # Check if a channel name is passed via argv to output restart message on
     if len(sys.argv) > 1:
         try:
             channel = bot.get_channel(int(sys.argv[1]))
