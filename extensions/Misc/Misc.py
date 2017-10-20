@@ -4,6 +4,7 @@ import os
 import datetime
 import yaml
 
+
 class Misc:
 
     def __init__(self, bot):
@@ -51,7 +52,7 @@ class Misc:
                     await ctx.author.edit(roles=user_roles)
             else:
                 all_channels = list(self.toggleable_channels.values())
-                all_channels = { channel: role for dict in all_channels for channel, role in dict.items() }
+                all_channels = {channel: role for dictionary in all_channels for channel, role in dictionary.items()}
                 if toggle in all_channels.keys():
                     channel = discord.utils.get(ctx.guild.channels, name=toggle)
                     toggle_role = discord.utils.get(ctx.guild.roles, name=all_channels[toggle])

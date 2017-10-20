@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 import yaml
-import asyncio
 import os
 import sys
 
-import discord
 from discord.ext import commands
 
 try:
@@ -13,8 +11,12 @@ try:
         config = yaml.safe_load(c)
 except FileNotFoundError:
     print("Config file not found - please copy config.yaml.example to config.yaml")
+    sys.exit()
 
-bot = commands.Bot(command_prefix=config['prefix'], description=config['description'], max_messages=config['max_messages'])
+bot = commands.Bot(command_prefix=config['prefix'],
+                   description=config['description'],
+                   max_messages=config['max_messages'])
+
 
 @bot.event
 async def on_ready():
@@ -43,6 +45,7 @@ async def on_ready():
             await channel.send("Bot has restarted")
         except:
             pass
+
 
 @commands.has_permissions(administrator=True)
 @bot.command(hidden=True)
