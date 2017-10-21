@@ -1,8 +1,9 @@
 import discord
-from discord.ext import commands
 import os
 import datetime
 import yaml
+
+from discord.ext import commands
 
 
 class Misc:
@@ -18,7 +19,7 @@ class Misc:
 
     @commands.command()
     async def ping(self, ctx):
-        """Chick ping of bot"""
+        """Check ping of bot"""
         start = datetime.datetime.now()
         message = await ctx.send("Pong! Response time: (Calculating)")
         end = message.created_at.now()
