@@ -66,6 +66,18 @@ class Misc:
                         user_roles.append(toggle_role)
                     await ctx.author.edit(roles=user_roles)
 
+    @commands.command(aliases=["mc", "members"])
+    async def membercount(self, ctx, channel=""):
+        """Returns member count in the specified channel, or the server if not specified"""
+        channel = ctx.message.channel_mentions[0]
+        if channel:
+            if not ctx.author.permissions_in(channel).read_messages:
+                await ctx.send("You cannot view the member count in this channel")
+            else:
+                await ctx.send("There are {} members in {}".format(len(channel.members), channel.name))
+        else:
+            await ctx.send("SSSv4stro currently has {} members".format(ctx.guild.member_count))
+
 
 def setup(bot):
     bot.add_cog(Misc(bot))

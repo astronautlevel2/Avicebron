@@ -16,7 +16,7 @@ class Moderation:
         """Kick the specified member"""
         try:
             member = ctx.message.mentions[0]
-            if ctx.message.author.top_role < member.top_role:
+            if ctx.message.author.top_role <= member.top_role:
                 await ctx.send("You cannot kick {}".format(member))
                 return
             try:
@@ -36,7 +36,7 @@ class Moderation:
         """Ban the specified member"""
         try:
             member = ctx.message.mentions[0]
-            if ctx.message.author.top_role < member.top_role:
+            if ctx.message.author.top_role <= member.top_role:
                 await ctx.send("You cannot ban {}".format(member))
                 return
             try:
