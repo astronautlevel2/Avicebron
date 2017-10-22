@@ -69,8 +69,8 @@ class Misc:
     @commands.command(aliases=["mc", "members"])
     async def membercount(self, ctx, channel=""):
         """Returns member count in the specified channel, or the server if not specified"""
-        channel = ctx.message.channel_mentions[0]
-        if channel:
+        if len(ctx.message.channel_mentions) > 0:
+            channel = ctx.message.channel_mentions[0]
             if not ctx.author.permissions_in(channel).read_messages:
                 await ctx.send("You cannot view the member count in this channel")
             else:
