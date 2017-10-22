@@ -2,6 +2,7 @@ import discord
 import os
 import datetime
 import yaml
+from Utilities.get_helper import get_channel
 
 from discord.ext import commands
 
@@ -70,9 +71,11 @@ class Misc:
     @commands.command(aliases=["mc", "members"])
     async def membercount(self, ctx, channel=""):
         """Returns member count in the specified channel, or the server if not specified"""
-        if len(ctx.message.channel_mentions) > 0:
-            channel = ctx.message.channel_mentions[0]
-            if not ctx.author.permissions_in(channel).read_messages:
+        if channel:
+            channel = get_channel(ctx.guild.channels, channel)
+            if not channel:
+                await ctx.send("That channel doesn't exist!")
+            elif not ctx.author.permissions_in(channel).read_messages:
                 await ctx.send("You cannot view the member count in this channel")
             else:
                 await ctx.send("There are {} members in {}".format(len(channel.members), channel.name))
