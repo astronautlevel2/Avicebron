@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import yaml
 import os
 import sys
 
 import discord
+import yaml
 from discord.ext import commands
 
 try:
