@@ -67,7 +67,9 @@ class Moderation:
                                         .format(str(member.id)))
             self.warn_db_cursor.execute("SELECT * FROM _{}".format(str(member.id)))
             warns = self.warn_db_cursor.fetchall()
-            warncount = len(warns)
+            warncount = 0
+            for _, _, _, revoked, _ in warns:
+                warncount += revoked
             self.warn_db_cursor.execute("INSERT INTO _{} VALUES (?, ?, ?, 0, {})".format(str(member.id), warncount + 1), (datetime.datetime.now(), str(ctx.message.author.id), reason))
             self.warn_db.commit()
             await ctx.send("Warned member {}!".format(member))
