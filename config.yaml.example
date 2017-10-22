@@ -2,6 +2,7 @@ token: "your token here"
 prefix: "your bot prefix here"
 max_messages: 100 # Number of messages to cache. Higher numbers slow startup
 description: Your description here
+command_log_channel: Channel Name Here
 mod_roles: # List of staff roles, in order of rank. You can use however many roles you want here
  - Owner role
  - Admin role

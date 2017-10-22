@@ -16,6 +16,7 @@ class Misc:
             config = yaml.safe_load(c)
 
         self.toggleable_channels = config['toggleable_channels']
+        self.log_channel = self.bot.command_log_channel
 
     @commands.command()
     async def ping(self, ctx):
@@ -40,29 +41,27 @@ class Misc:
             return await ctx.send("You can't toggle Ungrouped!")
         else:
             if toggle in self.toggleable_channels.keys():
-                for channel, role in self.toggleable_channels[toggle].items():
-                    channel = discord.utils.get(ctx.guild.channels, name=channel)
+                for role in self.toggleable_channels[toggle].values():
                     toggle_role = discord.utils.get(ctx.guild.roles, name=role)
                     user_roles = ctx.author.roles
                     if toggle_role in user_roles:
                         user_roles.remove(toggle_role)
-                        await channel.send("<@{}> has left the channel".format(ctx.author.id))
+                        await self.log_channel.send("<@{}> has left the channel".format(ctx.author.id))
                     else:
                         user_roles.append(toggle_role)
-                        await channel.send("<@{}> has joined the channel".format(ctx.author.id))
+                        await self.log_channel.send("<@{}> has joined the channel".format(ctx.author.id))
                     await ctx.author.edit(roles=user_roles)
             else:
                 all_channels = list(self.toggleable_channels.values())
                 all_channels = {channel: role for dictionary in all_channels for channel, role in dictionary.items()}
                 if toggle in all_channels.keys():
-                    channel = discord.utils.get(ctx.guild.channels, name=toggle)
                     toggle_role = discord.utils.get(ctx.guild.roles, name=all_channels[toggle])
                     user_roles = ctx.author.roles
                     if toggle_role in user_roles:
                         user_roles.remove(toggle_role)
-                        await channel.send("<@{}> has left the channel".format(ctx.author.id))
+                        await self.log_channel.send("<@{}> has left the channel".format(ctx.author.id))
                     else:
-                        await channel.send("<@{}> has joined the channel".format(ctx.author.id))
+                        await self.log_channel.send("<@{}> has joined the channel".format(ctx.author.id))
                         user_roles.append(toggle_role)
                     await ctx.author.edit(roles=user_roles)
 

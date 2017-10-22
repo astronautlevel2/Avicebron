@@ -4,6 +4,7 @@ import yaml
 import os
 import sys
 
+import discord
 from discord.ext import commands
 
 try:
@@ -20,6 +21,7 @@ bot = commands.Bot(command_prefix=config['prefix'],
 
 @bot.event
 async def on_ready():
+    bot.command_log_channel = discord.utils.get(bot.guilds[0].channels, name=config["command_log_channel"])
     print("Bot ready, loading extensions")
     # Extension loading code adapted from appu1232/discord-selfbot
     for entry in os.listdir("extensions"):
