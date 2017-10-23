@@ -49,10 +49,12 @@ class Misc:
                     user_roles = ctx.author.roles
                     if toggle_role in user_roles:
                         user_roles.remove(toggle_role)
-                        await self.log_channel.send("<@{}> has left {}".format(ctx.author.id, channel.mention))
+                        if self.log_channel:
+                            await self.log_channel.send("<@{}> has left {}".format(ctx.author.id, channel.mention))
                     else:
                         user_roles.append(toggle_role)
-                        await self.log_channel.send("<@{}> has joined {}".format(ctx.author.id, channel.mention))
+                        if self.log_channel:
+                            await self.log_channel.send("<@{}> has joined {}".format(ctx.author.id, channel.mention))
                     await ctx.author.edit(roles=user_roles)
             else:
                 all_channels = list(self.toggleable_channels.values())

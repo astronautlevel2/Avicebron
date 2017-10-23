@@ -4,6 +4,7 @@ import datetime
 import sqlite3
 
 import discord
+
 from discord.ext import commands
 
 from Utilities.get_helper import get_user
@@ -14,47 +15,60 @@ class Moderation:
     def __init__(self, bot):
         self.bot = bot
         self.warn_db = sqlite3.connect('Databases/warn.db')
-        self.warn_db_cursor = self. warn_db.cursor()
+        self.warn_db_cursor = self.warn_db.cursor()
+        self.log_channel = self.bot.moderation_log_channel
 
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def kick(self, ctx, member, *, reason=""):
-        """Kick the specified member"""
+        """
+        Kick the specified member
+        Usage: !kick <mention, ID, or name> [reason]
+        """
         try:
-            member = ctx.message.mentions[0]
-            if ctx.message.author.top_role <= member.top_role:
-                await ctx.send("You cannot kick {}".format(member))
-                return
-            try:
-                await member.send("You have been kicked from SSSv4stro! Reason: {}".format(reason if reason else "No reason provided"))
-            except discord.errors.Forbidden:
-                print("DMing user failed")
-            await member.kick(reason=reason + "\nResponsible moderator: {}".format(ctx.author))
-            await ctx.send("{} has been kicked".format(member))
-        except IndexError:
-            await ctx.send("Please mention a member")
+            member = get_user(ctx.message, member)
+            if member:
+                if ctx.author.top_role <= member.top_role:
+                    return await ctx.send("You cannot kick {}!".format(member))
+                try:
+                    await member.send("You have been kicked from SSSv4stro! Reason: {}".format(reason if reason else "No reason provided"))
+                except discord.errors.Forbidden:
+                    print("DMing user failed.")
+                await member.kick(reason=reason + "\nResponsible moderator: {}".format(ctx.author))
+                await ctx.send("{} has been kicked".format(member))
+                if self.log_channel:
+                    await self.log_channel.send("{} kicked {} for reason: {}"
+                                                .format(ctx.author, member, reason if reason else "None provided"))
+            else:
+                await ctx.send("Please enter a valid member!")
         except discord.errors.Forbidden:
-            await ctx.send("That member cannot be kicked")
+            await ctx.send("That member cannot be kicked!")
 
     @commands.has_permissions(ban_members=True)
     @commands.command()
     async def ban(self, ctx, member, *, reason=""):
-        """Ban the specified member"""
+        """
+        Ban the specified member
+        Usage: !ban <mention, ID, or name> [reason]
+        """
         try:
-            member = ctx.message.mentions[0]
-            if ctx.message.author.top_role <= member.top_role:
-                await ctx.send("You cannot ban {}".format(member))
-                return
-            try:
-                await member.send("You have been banned from SSSv4stro! Reason: {}".format(reason if reason else "No reason provided"))
-            except discord.errors.Forbidden:
-                print("DMing user failed.")
-            await member.ban(reason=reason + "\nResponsible moderator: {}".format(ctx.author), delete_message_days=0)
-            await ctx.send("{} has been banned".format(member))
-        except IndexError:
-            await ctx.send("Please mention a member")
+            if member:
+                member = get_user(ctx.message, member)
+                if ctx.author.top_role <= member.top_role:
+                    return await ctx.send("You cannot ban {}!".format(member))
+                try:
+                    await member.send("You have been banned from SSSv4stro! Reason: {}".format(reason if reason else "No reason provided"))
+                except discord.errors.Forbidden:
+                    print("DMing user failed.")
+                await member.ban(reason=reason + "\nResponsible moderator: {}".format(ctx.author), delete_message_days=0)
+                await ctx.send("{} has been banned".format(member))
+                if self.log_channel:
+                    await self.log_channel.send("{} banned {} for reason: {}"
+                                                .format(ctx.author, member, reason if reason else "None provided"))
+            else:
+                await ctx.send("Please enter a valid member!")
         except discord.errors.Forbidden:
-            await ctx.send("That member cannot be banned")
+            await ctx.send("That member cannot be banned!")
 
     @commands.has_permissions(kick_members=True)
     @commands.command()
@@ -74,9 +88,14 @@ class Moderation:
             warncount = 0
             for _, _, _, revoked, _ in warns:
                 warncount += revoked
-            self.warn_db_cursor.execute("INSERT INTO _{} VALUES (?, ?, ?, 0, {})".format(str(member.id), len(warns) + 1), (datetime.datetime.now(), str(ctx.message.author.id), reason))
+            self.warn_db_cursor.execute("INSERT INTO _{} VALUES (?, ?, ?, 0, {})".format(str(member.id), len(warns) + 1),
+                                        (datetime.datetime.now(), str(ctx.message.author.id), reason))
             self.warn_db.commit()
             await ctx.send("Warned member {}!".format(member))
+            try:
+                await member.send("You have been warned on SSSv4stro! Reason: {}".format(reason))
+            except discord.errors.Forbidden:
+                print("DMing user failed.")
         else:
             await ctx.send("Please enter a valid member!")
 
@@ -85,25 +104,28 @@ class Moderation:
     async def listwarns(self, ctx, member):
         """
         List warns for a specified member
-        Usage: !warm <mention, ID, or name>
+        Usage: !listwarns <mention, ID, or name>
         """
         member = get_user(ctx.message, member)
         if member:
-            exists = self.warn_db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='_{}'".format(member.id)).fetchone()
+            exists = self.warn_db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='_{}'"
+                                                 .format(member.id)).fetchone()
             if exists:
                 warns = self.warn_db_cursor.execute("SELECT * FROM _{}".format(str(member.id))).fetchall()
                 embed = discord.Embed(title="Warns for {}".format(member))
                 for timestamp, invoker, reason, revoked, key in warns:
                     invoker = ctx.guild.get_member(int(invoker))
                     if not revoked:
-                        embed.add_field(name="{}: {}".format(key, timestamp), value="{}\nWarned by: {}".format(reason, invoker), inline=False)
+                        embed.add_field(name="{}: {}".format(key, timestamp), value="{}\nWarned by: {}"
+                                        .format(reason, invoker), inline=False)
                     else:
-                        embed.add_field(name="~~{}: {}~~".format(key, timestamp), value="~~{}\nWarned by: {}~~".format(reason, invoker), inline=False)
+                        embed.add_field(name="~~{}: {}~~".format(key, timestamp), value="~~{}\nWarned by: {}~~"
+                                        .format(reason, invoker), inline=False)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("No warns found!")
         else:
-            await ctx.send("Please mention a valid member!")
+            await ctx.send("Please enter a valid member!")
 
     @commands.has_permissions(administrator=True)
     @commands.command()
@@ -131,7 +153,7 @@ class Moderation:
             self.warn_db_cursor.execute("UPDATE _{} SET revoked = 1 WHERE key={}".format(member.id, warn))
             await ctx.send("Warn {} for {} cleared!".format(warn, member))
         else:
-            await ctx.send("Please mention a valid member!")
+            await ctx.send("Please enter a valid member!")
 
 
 def setup(bot):
