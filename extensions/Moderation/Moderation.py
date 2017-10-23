@@ -37,8 +37,13 @@ class Moderation:
                 await member.kick(reason=reason + "\nResponsible moderator: {}".format(ctx.author))
                 await ctx.send("{} has been kicked".format(member))
                 if self.log_channel:
-                    await self.log_channel.send("{} kicked {} for reason: {}"
-                                                .format(ctx.author, member, reason if reason else "None provided"))
+                    embed = discord.Embed()
+                    embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                    embed.add_field(name="Action type", value="Kick", inline=False)
+                    embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                    embed.add_field(name="Reason", value=reason if reason else "No reason provided", inline=False)
+                    await self.log_channel.send(embed=embed)
+
             else:
                 await ctx.send("Please enter a valid member!")
         except discord.errors.Forbidden:
@@ -52,8 +57,8 @@ class Moderation:
         Usage: [p]ban <mention, ID, or name> [reason]
         """
         try:
+            member = get_user(ctx.message, member)
             if member:
-                member = get_user(ctx.message, member)
                 if ctx.author.top_role <= member.top_role:
                     return await ctx.send("You cannot ban {}!".format(member))
                 try:
@@ -63,8 +68,13 @@ class Moderation:
                 await member.ban(reason=reason + "\nResponsible moderator: {}".format(ctx.author), delete_message_days=0)
                 await ctx.send("{} has been banned".format(member))
                 if self.log_channel:
-                    await self.log_channel.send("{} banned {} for reason: {}"
-                                                .format(ctx.author, member, reason if reason else "None provided"))
+                    embed = discord.Embed()
+                    embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                    embed.add_field(name="Action type", value="Ban", inline=False)
+                    embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                    embed.add_field(name="Reason", value=reason if reason else "No reason provided", inline=False)
+                    await self.log_channel.send(embed=embed)
+
             else:
                 await ctx.send("Please enter a valid member!")
         except discord.errors.Forbidden:
@@ -96,6 +106,13 @@ class Moderation:
                 await member.send("You have been warned on SSSv4stro! Reason: {}".format(reason))
             except discord.errors.Forbidden:
                 print("DMing user failed.")
+            if self.log_channel:
+                embed = discord.Embed()
+                embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                embed.add_field(name="Action type", value="Warn", inline=False)
+                embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                embed.add_field(name="Reason", value=reason, inline=False)
+                await self.log_channel.send(embed=embed)
         else:
             await ctx.send("Please enter a valid member!")
 
@@ -135,9 +152,20 @@ class Moderation:
         Usage: [p]clearwarns <member>
         """
         member = get_user(ctx.message, member)
-        if member:
+        if member == ctx.message.author:
+            await ctx.send("You can't clear your own warns!")
+        elif member.top_role >= ctx.message.author.top_role:
+            await ctx.send("You can't clear this member's warns!")
+        elif member:
             self.warn_db_cursor.execute("DROP TABLE IF EXISTS _{}".format(member.id))
             await ctx.send("Warns for {} cleared!".format(member))
+            if self.log_channel:
+                embed = discord.Embed()
+                embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                embed.add_field(name="Action type", value="Clearwarns", inline=False)
+                embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                await self.log_channel.send(embed=embed)
+
         else:
             await ctx.send("Please mention a valid member!")
 
@@ -152,6 +180,14 @@ class Moderation:
         if member:
             self.warn_db_cursor.execute("UPDATE _{} SET revoked = 1 WHERE key={}".format(member.id, warn))
             await ctx.send("Warn {} for {} cleared!".format(warn, member))
+            if self.log_channel:
+                embed = discord.Embed()
+                embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                embed.add_field(name="Action type", value="Delete Warn", inline=False)
+                embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                embed.add_field(name="Warn revoked", value=warn, inline=False)
+                await self.log_channel.send(embed=embed)
+
         else:
             await ctx.send("Please enter a valid member!")
 
@@ -165,6 +201,13 @@ class Moderation:
         channel = ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=False)
         await channel.send("Channel has been locked down to non-administrators.")
+        if self.log_channel:
+            embed = discord.Embed()
+            embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+            embed.add_field(name="Action type", value="Lockdown", inline=False)
+            embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
+            await self.log_channel.send(embed=embed)
+
 
     @commands.has_permissions(manage_messages=True)
     @commands.command()
@@ -176,6 +219,12 @@ class Moderation:
         channel = ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=None)
         await channel.send("Channel has been unlocked.")
+        if self.log_channel:
+            embed = discord.Embed()
+            embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+            embed.add_field(name="Action type", value="Unlockdown", inline=False)
+            embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
+            await self.log_channel.send(embed=embed)
 
 
 def setup(bot):
