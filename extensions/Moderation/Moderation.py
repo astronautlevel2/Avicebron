@@ -59,6 +59,10 @@ class Moderation:
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def warn(self, ctx, member, *, reason):
+        """
+        Warn the specific member.
+        Usage: !warn <mention, ID, or name> <reason>
+        """
         member = get_user(ctx.message, member)
         if member:
             if member.top_role >= ctx.message.author.top_role:
@@ -70,7 +74,7 @@ class Moderation:
             warncount = 0
             for _, _, _, revoked, _ in warns:
                 warncount += revoked
-            self.warn_db_cursor.execute("INSERT INTO _{} VALUES (?, ?, ?, 0, {})".format(str(member.id), warncount + 1), (datetime.datetime.now(), str(ctx.message.author.id), reason))
+            self.warn_db_cursor.execute("INSERT INTO _{} VALUES (?, ?, ?, 0, {})".format(str(member.id), len(warns) + 1), (datetime.datetime.now(), str(ctx.message.author.id), reason))
             self.warn_db.commit()
             await ctx.send("Warned member {}!".format(member))
         else:
@@ -79,6 +83,10 @@ class Moderation:
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def listwarns(self, ctx, member):
+        """
+        List warns for a specified member
+        Usage: !warm <mention, ID, or name>
+        """
         member = get_user(ctx.message, member)
         if member:
             exists = self.warn_db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='_{}'".format(member.id)).fetchone()
@@ -100,6 +108,10 @@ class Moderation:
     @commands.has_permissions(administrator=True)
     @commands.command()
     async def clearwarns(self, ctx, member):
+        """
+        Clear warns for a member permanently
+        Usage: !clearwarns <member>
+        """
         member = get_user(ctx.message, member)
         if member:
             self.warn_db_cursor.execute("DROP TABLE IF EXISTS _{}".format(member.id))
@@ -110,6 +122,10 @@ class Moderation:
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def delwarn(self, ctx, member, warn):
+        """
+        Revoke a specific warn for a member
+        Usage: !delwarn <mention, ID, or name> <warn #>
+        """
         member = get_user(ctx.message, member)
         if member:
             self.warn_db_cursor.execute("UPDATE _{} SET revoked = 1 WHERE key={}".format(member.id, warn))
