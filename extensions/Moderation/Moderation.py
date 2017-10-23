@@ -38,6 +38,7 @@ class Moderation:
                 await ctx.send("{} has been kicked".format(member))
                 if self.log_channel:
                     embed = discord.Embed()
+                    embed.color = discord.Color.orange()
                     embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
                     embed.add_field(name="Action type", value="Kick", inline=False)
                     embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
@@ -69,6 +70,7 @@ class Moderation:
                 await ctx.send("{} has been banned".format(member))
                 if self.log_channel:
                     embed = discord.Embed()
+                    embed.color = discord.Color.dark_red()
                     embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
                     embed.add_field(name="Action type", value="Ban", inline=False)
                     embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
@@ -108,6 +110,7 @@ class Moderation:
                 print("DMing user failed.")
             if self.log_channel:
                 embed = discord.Embed()
+                embed.color = discord.Color.gold()
                 embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Warn", inline=False)
                 embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
@@ -161,6 +164,7 @@ class Moderation:
             await ctx.send("Warns for {} cleared!".format(member))
             if self.log_channel:
                 embed = discord.Embed()
+                embed.color = discord.Color.green()
                 embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Clearwarns", inline=False)
                 embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
@@ -182,6 +186,7 @@ class Moderation:
             await ctx.send("Warn {} for {} cleared!".format(warn, member))
             if self.log_channel:
                 embed = discord.Embed()
+                embed.color = discord.Color.teal()
                 embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Delete Warn", inline=False)
                 embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
@@ -203,6 +208,7 @@ class Moderation:
         await channel.send("Channel has been locked down to non-administrators.")
         if self.log_channel:
             embed = discord.Embed()
+            embed.color = discord.Color.dark_orange()
             embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
             embed.add_field(name="Action type", value="Lockdown", inline=False)
             embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
@@ -221,6 +227,7 @@ class Moderation:
         await channel.send("Channel has been unlocked.")
         if self.log_channel:
             embed = discord.Embed()
+            embed.color = discord.Color.blue()
             embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
             embed.add_field(name="Action type", value="Unlockdown", inline=False)
             embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
