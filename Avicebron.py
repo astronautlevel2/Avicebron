@@ -18,11 +18,11 @@ bot = commands.Bot(command_prefix=config['prefix'],
                    description=config['description'],
                    max_messages=config['max_messages'])
 
-bot.guild = bot.guilds[0]
-
 
 @bot.event
 async def on_ready():
+    bot.guild = bot.guilds[0]
+
     bot.command_log_channel = \
         get_channel(bot.guild.channels, config["command_log_channel"]) if config["command_log_channel"] else None
     bot.moderation_log_channel = \

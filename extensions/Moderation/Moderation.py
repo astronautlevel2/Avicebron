@@ -23,7 +23,7 @@ class Moderation:
     async def kick(self, ctx, member, *, reason=""):
         """
         Kick the specified member
-        Usage: !kick <mention, ID, or name> [reason]
+        Usage: [p]kick <mention, ID, or name> [reason]
         """
         try:
             member = get_user(ctx.message, member)
@@ -49,7 +49,7 @@ class Moderation:
     async def ban(self, ctx, member, *, reason=""):
         """
         Ban the specified member
-        Usage: !ban <mention, ID, or name> [reason]
+        Usage: [p]ban <mention, ID, or name> [reason]
         """
         try:
             if member:
@@ -75,7 +75,7 @@ class Moderation:
     async def warn(self, ctx, member, *, reason):
         """
         Warn the specific member.
-        Usage: !warn <mention, ID, or name> <reason>
+        Usage: [p]warn <mention, ID, or name> <reason>
         """
         member = get_user(ctx.message, member)
         if member:
@@ -104,7 +104,7 @@ class Moderation:
     async def listwarns(self, ctx, member):
         """
         List warns for a specified member
-        Usage: !listwarns <mention, ID, or name>
+        Usage: [p]listwarns <mention, ID, or name>
         """
         member = get_user(ctx.message, member)
         if member:
@@ -132,7 +132,7 @@ class Moderation:
     async def clearwarns(self, ctx, member):
         """
         Clear warns for a member permanently
-        Usage: !clearwarns <member>
+        Usage: [p]clearwarns <member>
         """
         member = get_user(ctx.message, member)
         if member:
@@ -146,7 +146,7 @@ class Moderation:
     async def delwarn(self, ctx, member, warn):
         """
         Revoke a specific warn for a member
-        Usage: !delwarn <mention, ID, or name> <warn #>
+        Usage: [p]delwarn <mention, ID, or name> <warn #>
         """
         member = get_user(ctx.message, member)
         if member:
@@ -154,6 +154,28 @@ class Moderation:
             await ctx.send("Warn {} for {} cleared!".format(warn, member))
         else:
             await ctx.send("Please enter a valid member!")
+
+    @commands.has_permissions(manage_messages=True)
+    @commands.command()
+    async def lockdown(self, ctx):
+        """
+        Lock down a channel
+        Usage: [p]lockdown
+        """
+        channel = ctx.channel
+        await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        await channel.send("Channel has been locked down to non-administrators.")
+
+    @commands.has_permissions(manage_messages=True)
+    @commands.command()
+    async def unlock(self, ctx):
+        """
+        Unlock a locked channel
+        Usage: [p]unlock
+        """
+        channel = ctx.channel
+        await channel.set_permissions(ctx.guild.default_role, send_messages=None)
+        await channel.send("Channel has been unlocked.")
 
 
 def setup(bot):
