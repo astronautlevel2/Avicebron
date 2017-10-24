@@ -18,6 +18,8 @@ class Moderation:
         self.warn_db_cursor = self.warn_db.cursor()
         self.log_channel = self.bot.moderation_log_channel
 
+        self.executed = " executed a moderation action"
+
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def kick(self, ctx, member, *, reason=""):
@@ -39,10 +41,11 @@ class Moderation:
                 if self.log_channel:
                     embed = discord.Embed()
                     embed.color = discord.Color.orange()
-                    embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                    embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.message.author.avatar_url)
                     embed.add_field(name="Action type", value="Kick", inline=False)
                     embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
                     embed.add_field(name="Reason", value=reason if reason else "No reason provided", inline=False)
+                    embed.add_field(name="In", value=ctx.channel.name, inline=False)
                     await self.log_channel.send(embed=embed)
 
             else:
@@ -71,10 +74,11 @@ class Moderation:
                 if self.log_channel:
                     embed = discord.Embed()
                     embed.color = discord.Color.dark_red()
-                    embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                    embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.author.avatar_url)
                     embed.add_field(name="Action type", value="Ban", inline=False)
                     embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
                     embed.add_field(name="Reason", value=reason if reason else "No reason provided", inline=False)
+                    embed.add_field(name="In", value=ctx.channel.name, inline=False)
                     await self.log_channel.send(embed=embed)
 
             else:
@@ -91,7 +95,7 @@ class Moderation:
         """
         member = get_user(ctx.message, member)
         if member:
-            if member.top_role >= ctx.message.author.top_role:
+            if ctx.author.top_role <= member.top_role:
                 return await ctx.send("You cannot warn this member!")
             self.warn_db_cursor.execute("CREATE TABLE IF NOT EXISTS _{} (datetime timestamp, invoker text, reason text, revoked integer, key integer PRIMARY KEY)"
                                         .format(str(member.id)))
@@ -111,10 +115,11 @@ class Moderation:
             if self.log_channel:
                 embed = discord.Embed()
                 embed.color = discord.Color.gold()
-                embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Warn", inline=False)
                 embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
                 embed.add_field(name="Reason", value=reason, inline=False)
+                embed.add_field(name="In", value=ctx.channel.name, inline=False)
                 await self.log_channel.send(embed=embed)
         else:
             await ctx.send("Please enter a valid member!")
@@ -155,7 +160,7 @@ class Moderation:
         Usage: [p]clearwarns <member>
         """
         member = get_user(ctx.message, member)
-        if member == ctx.message.author:
+        if member == ctx.author:
             await ctx.send("You can't clear your own warns!")
         elif member.top_role >= ctx.message.author.top_role:
             await ctx.send("You can't clear this member's warns!")
@@ -165,7 +170,7 @@ class Moderation:
             if self.log_channel:
                 embed = discord.Embed()
                 embed.color = discord.Color.green()
-                embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Clearwarns", inline=False)
                 embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
                 await self.log_channel.send(embed=embed)
@@ -187,7 +192,7 @@ class Moderation:
             if self.log_channel:
                 embed = discord.Embed()
                 embed.color = discord.Color.teal()
-                embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+                embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Delete Warn", inline=False)
                 embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
                 embed.add_field(name="Warn revoked", value=warn, inline=False)
@@ -209,11 +214,10 @@ class Moderation:
         if self.log_channel:
             embed = discord.Embed()
             embed.color = discord.Color.dark_orange()
-            embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=str(ctx.message.author) + self.executed, icon_url=ctx.message.author.avatar_url)
             embed.add_field(name="Action type", value="Lockdown", inline=False)
             embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
             await self.log_channel.send(embed=embed)
-
 
     @commands.has_permissions(manage_messages=True)
     @commands.command()
@@ -228,7 +232,7 @@ class Moderation:
         if self.log_channel:
             embed = discord.Embed()
             embed.color = discord.Color.blue()
-            embed.set_author(name=str(ctx.message.author) + " moderator action", icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=str(ctx.message.author) + self.executed, icon_url=ctx.message.author.avatar_url)
             embed.add_field(name="Action type", value="Unlockdown", inline=False)
             embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
             await self.log_channel.send(embed=embed)
