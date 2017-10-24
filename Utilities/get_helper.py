@@ -1,4 +1,5 @@
 import discord
+import re
 
 
 def get_channel(channel_list, text):  # Adapted from appu's discord selfbot
@@ -15,14 +16,10 @@ def get_channel(channel_list, text):  # Adapted from appu's discord selfbot
 
 def get_user(message, user):
     try:
-        member = message.mentions[0]
-    except IndexError:
-        member = message.guild.get_member_named(user)
-    if not member:
+        uid = int(re.match(r"<@!?(\d+)>", user).groups()[0])
+    except AttributeError:
         try:
-            member = message.guild.get_member(int(user))
+            uid = int(user)
         except ValueError:
-            pass
-    if not member:
-        return None
-    return member
+            return message.guild.get_member_named(user)
+    return message.guild.get_member(uid)
