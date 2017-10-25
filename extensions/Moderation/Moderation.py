@@ -245,10 +245,10 @@ class Moderation:
         Usage: [p]purge <number> [whether or not to delete pinned messages, defaults to true]
         """
         await ctx.message.delete()
-        async for message in ctx.channel.history(limit=int(number)):
-            if message.pinned and pins.lower() == "false":
-                continue
-            await message.delete()
+        if pins.lower() == "false":
+            await ctx.channel.purge(limit=int(number), check=lambda m: not m.pinned)
+        else:
+            await ctx.channel.purge(limit=int(number))
 
 
 def setup(bot):
