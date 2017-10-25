@@ -237,6 +237,19 @@ class Moderation:
             embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
             await self.log_channel.send(embed=embed)
 
+    @commands.has_permissions(manage_messages=True)
+    @commands.command()
+    async def purge(self, ctx, number, pins="True"):
+        """
+        Purge X number of messages.
+        Usage: [p]purge <number> [whether or not to delete pinned messages, defaults to true]
+        """
+        await ctx.message.delete()
+        async for message in ctx.channel.history(limit=int(number)):
+            if message.pinned and pins.lower() == "false":
+                continue
+            await message.delete()
+
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
