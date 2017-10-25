@@ -39,13 +39,14 @@ class Moderation:
                 await member.kick(reason=reason + "\nResponsible moderator: {}".format(ctx.author))
                 await ctx.send("{} has been kicked".format(member))
                 if self.log_channel:
+                    channel = ctx.channel
                     embed = discord.Embed()
                     embed.color = discord.Color.orange()
                     embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.message.author.avatar_url)
                     embed.add_field(name="Action type", value="Kick", inline=False)
-                    embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                    embed.add_field(name="Target", value="{} ({})".format(member.mention, member), inline=False)
                     embed.add_field(name="Reason", value=reason if reason else "No reason provided", inline=False)
-                    embed.add_field(name="In", value=ctx.channel.name, inline=False)
+                    embed.add_field(name="In", value="{} ({})".format(channel.mention, channel), inline=False)
                     await self.log_channel.send(embed=embed)
 
             else:
@@ -72,13 +73,14 @@ class Moderation:
                 await member.ban(reason=reason + "\nResponsible moderator: {}".format(ctx.author), delete_message_days=0)
                 await ctx.send("{} has been banned".format(member))
                 if self.log_channel:
+                    channel = ctx.channel
                     embed = discord.Embed()
                     embed.color = discord.Color.dark_red()
                     embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.author.avatar_url)
                     embed.add_field(name="Action type", value="Ban", inline=False)
-                    embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                    embed.add_field(name="Target", value="{} ({})".format(member.mention, member), inline=False)
                     embed.add_field(name="Reason", value=reason if reason else "No reason provided", inline=False)
-                    embed.add_field(name="In", value=ctx.channel.name, inline=False)
+                    embed.add_field(name="In", value="{} ({})".format(channel.mention, channel), inline=False)
                     await self.log_channel.send(embed=embed)
 
             else:
@@ -113,13 +115,14 @@ class Moderation:
             except discord.errors.Forbidden:
                 print("DMing user failed.")
             if self.log_channel:
+                channel = ctx.channel
                 embed = discord.Embed()
                 embed.color = discord.Color.gold()
                 embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Warn", inline=False)
-                embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                embed.add_field(name="Target", value="{} ({})".format(member.mention, member), inline=False)
                 embed.add_field(name="Reason", value=reason, inline=False)
-                embed.add_field(name="In", value=ctx.channel.name, inline=False)
+                embed.add_field(name="In", value="{} ({})".format(channel.mention, channel), inline=False)
                 await self.log_channel.send(embed=embed)
         else:
             await ctx.send("Please enter a valid member!")
@@ -172,7 +175,7 @@ class Moderation:
                 embed.color = discord.Color.green()
                 embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Clearwarns", inline=False)
-                embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                embed.add_field(name="Target", value="{} ({})".format(member.mention, member), inline=False)
                 await self.log_channel.send(embed=embed)
 
         else:
@@ -194,7 +197,7 @@ class Moderation:
                 embed.color = discord.Color.teal()
                 embed.set_author(name=str(ctx.author) + self.executed, icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Action type", value="Delete Warn", inline=False)
-                embed.add_field(name="Target", value=member.mention + " ({})".format(member), inline=False)
+                embed.add_field(name="Target", value="{} ({})".format(member.mention, member), inline=False)
                 embed.add_field(name="Warn revoked", value=warn, inline=False)
                 await self.log_channel.send(embed=embed)
 
@@ -216,7 +219,7 @@ class Moderation:
             embed.color = discord.Color.dark_orange()
             embed.set_author(name=str(ctx.message.author) + self.executed, icon_url=ctx.message.author.avatar_url)
             embed.add_field(name="Action type", value="Lockdown", inline=False)
-            embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
+            embed.add_field(name="Target", value="{} ({})".format(channel.mention, channel), inline=False)
             await self.log_channel.send(embed=embed)
 
     @commands.has_permissions(manage_messages=True)
@@ -234,7 +237,7 @@ class Moderation:
             embed.color = discord.Color.blue()
             embed.set_author(name=str(ctx.message.author) + self.executed, icon_url=ctx.message.author.avatar_url)
             embed.add_field(name="Action type", value="Unlockdown", inline=False)
-            embed.add_field(name="Target", value=channel.mention + " ({})".format(channel), inline=False)
+            embed.add_field(name="Target", value="{} ({})".format(channel.mention, channel), inline=False)
             await self.log_channel.send(embed=embed)
 
     @commands.has_permissions(manage_messages=True)
@@ -244,11 +247,19 @@ class Moderation:
         Purge X number of messages.
         Usage: [p]purge <number> [whether or not to delete pinned messages, defaults to true]
         """
+        channel = ctx.channel
         await ctx.message.delete()
         if pins.lower() == "false":
             await ctx.channel.purge(limit=int(number), check=lambda m: not m.pinned)
         else:
             await ctx.channel.purge(limit=int(number))
+        embed = discord.Embed()
+        embed.color = discord.Color.blue()
+        embed.set_author(name=str(ctx.message.author) + self.executed, icon_url=ctx.message.author.avatar_url)
+        embed.add_field(name="Action type", value="Purge [pins = {}]".format(pins.lower()), inline=False)
+        embed.add_field(name="Target", value="{} ({})".format(channel.mention, channel), inline=False)
+        await self.log_channel.send(embed=embed)
+
 
 
 def setup(bot):
