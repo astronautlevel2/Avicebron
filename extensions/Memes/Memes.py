@@ -34,6 +34,11 @@ and overall just more {7} than {1} was ever meant to be. goodbye.
         """Print lenny face ( ͡° ͜ʖ ͡°)"""
         await ctx.send("( ͡° ͜ʖ ͡°)")
 
+    @commands.command()
+    async def headpat(self, ctx):
+        """Send someone a headpat"""
+        await ctx.send("http://i.imgur.com/7V6gIIW.jpg")
+
     #@commands.command(aliases=[])
     #async def rip(self, ctx):
 
