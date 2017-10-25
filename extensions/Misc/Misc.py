@@ -60,7 +60,7 @@ class Misc:
                 all_channels = list(self.toggleable_channels.values())
                 all_channels = {channel: role for dictionary in all_channels for channel, role in dictionary.items()}
                 if toggle in all_channels.keys():
-                    channel = discord.utils.get(ctx.guild.channels, name=all_channels[toggle])
+                    channel = discord.utils.get(ctx.guild.channels, name=toggle)
                     toggle_role = discord.utils.get(ctx.guild.roles, name=all_channels[toggle])
                     user_roles = ctx.author.roles
                     if toggle_role in user_roles:
