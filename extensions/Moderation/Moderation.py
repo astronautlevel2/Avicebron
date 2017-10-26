@@ -253,12 +253,13 @@ class Moderation:
             await ctx.channel.purge(limit=int(number), check=lambda m: not m.pinned)
         else:
             await ctx.channel.purge(limit=int(number))
-        embed = discord.Embed()
-        embed.color = discord.Color.blue()
-        embed.set_author(name=str(ctx.message.author) + self.executed, icon_url=ctx.message.author.avatar_url)
-        embed.add_field(name="Action type", value="Purge [pins = {}]".format(pins.lower()), inline=False)
-        embed.add_field(name="Target", value="{} ({})".format(channel.mention, channel), inline=False)
-        await self.log_channel.send(embed=embed)
+        if self.log_channel:
+            embed = discord.Embed()
+            embed.color = discord.Color.blue()
+            embed.set_author(name=str(ctx.message.author) + self.executed, icon_url=ctx.message.author.avatar_url)
+            embed.add_field(name="Action type", value="Purge [pins = {}]".format(pins.lower()), inline=False)
+            embed.add_field(name="Target", value="{} ({})".format(channel.mention, channel), inline=False)
+            await self.log_channel.send(embed=embed)
 
 
 
