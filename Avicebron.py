@@ -27,6 +27,8 @@ async def on_ready():
         get_channel(bot.guild.channels, config["command_log_channel"]) if config["command_log_channel"] else None
     bot.moderation_log_channel = \
         get_channel(bot.guild.channels, config["moderation_log_channel"]) if config["moderation_log_channel"] else bot.command_log_channel
+    bot.event_log_channel = \
+        get_channel(bot.guild.channels, config["event_log_channel"]) if config["event_log_channel"] else bot.command_log_channel
     print("Bot ready, loading extensions")
     # Extension loading code adapted from appu1232/discord-selfbot
     for entry in os.listdir("extensions"):

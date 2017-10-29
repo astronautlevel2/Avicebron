@@ -6,6 +6,8 @@ command_log_channel: Channel name or ID here # Commands will not be logged if th
 # Commands logged are: togglechannel
 moderation_log_channel: Channel name or ID here # You can leave this blank to set it to the value of command_log_channel
 # Mod commands logged are: kick, ban, warn, delwarn, clearwarns, lockdown, purge
+event_log_channel: Channel name or ID here # You can leave this blank to set it to the value of moderation_log_channel
+# Things logged are: User joins, user leaves, message deletes, message edits
 mod_roles: # List of staff roles, in order of rank. You can use however many roles you want here
  - Owner role
  - Admin role
