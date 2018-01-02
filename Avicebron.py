@@ -30,6 +30,10 @@ async def on_ready():
     bot.event_log_channel = \
         get_channel(bot.guild.channels, config["event_log_channel"]) if config["event_log_channel"] else bot.command_log_channel
     print("Bot ready, loading extensions")
+    # Create Databases directory if it's missing since sqlite3 won't create directories
+    if not os.path.isdir("Databases/"):
+        os.makedirs("Databases/")
+
     # Extension loading code adapted from appu1232/discord-selfbot
     for entry in os.listdir("extensions"):
         if os.path.isdir("extensions/{}".format(entry)):

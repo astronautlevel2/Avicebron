@@ -33,7 +33,7 @@ class Moderation:
                 if ctx.author.top_role <= member.top_role:
                     return await ctx.send("You cannot kick {}!".format(member))
                 try:
-                    await member.send("You have been kicked from SSSv4stro! Reason: {}".format(reason if reason else "No reason provided"))
+                    await member.send("You have been kicked from {}! Reason: {}".format(ctx.guild.name, reason if reason else "No reason provided"))
                 except discord.errors.Forbidden:
                     print("DMing user failed.")
                 await member.kick(reason=reason + "\nResponsible moderator: {}".format(ctx.author))
@@ -67,7 +67,7 @@ class Moderation:
                 if ctx.author.top_role <= member.top_role:
                     return await ctx.send("You cannot ban {}!".format(member))
                 try:
-                    await member.send("You have been banned from SSSv4stro! Reason: {}".format(reason if reason else "No reason provided"))
+                    await member.send("You have been banned from {}! Reason: {}".format(ctx.guild.name, reason if reason else "No reason provided"))
                 except discord.errors.Forbidden:
                     print("DMing user failed.")
                 await member.ban(reason=reason + "\nResponsible moderator: {}".format(ctx.author), delete_message_days=0)
@@ -111,7 +111,7 @@ class Moderation:
             self.warn_db.commit()
             await ctx.send("Warned member {}!".format(member))
             try:
-                await member.send("You have been warned on SSSv4stro! Reason: {}".format(reason))
+                await member.send("You have been warned on {}! Reason: {}".format(ctx.guild.name, reason))
             except discord.errors.Forbidden:
                 print("DMing user failed.")
             if self.log_channel:
