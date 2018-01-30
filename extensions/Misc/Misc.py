@@ -14,8 +14,12 @@ class Misc:
         self.bot = bot
 
         path = os.path.dirname(os.path.abspath(__file__))
-        with open("{}/config.yaml".format(path)) as c:
-            config = yaml.safe_load(c)
+        try:
+            with open("{}/config.yaml".format(path)) as c:
+                config = yaml.safe_load(c)
+        except FileNotFoundError as e:
+            print("Not loading Misc extension due to missing config.yaml - Please copy and adjust config.yaml.example")
+            raise e
 
         self.toggleable_channels = config['toggleable_channels']
         self.log_channel = self.bot.command_log_channel
@@ -84,7 +88,7 @@ class Misc:
             else:
                 await ctx.send("There are {} members in {}".format(len(channel.members), channel.name))
         else:
-            await ctx.send("SSSv4stro currently has {} members".format(ctx.guild.member_count))
+            await ctx.send("{} currently has {} members".format(ctx.guild.name, ctx.guild.member_count))
 
 
 def setup(bot):
