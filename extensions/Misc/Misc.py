@@ -23,10 +23,11 @@ class Misc:
     @commands.command()
     async def ping(self, ctx):
         """Check ping of bot"""
+        msgtime = ctx.message.created_at
         start = datetime.datetime.now()
-        message = await ctx.send("Pong! Response time: (Calculating)")
-        end = message.created_at.now()
-        await message.edit(content="Pong! Response time: {} ms".format((end - start).microseconds / 1000))
+        message = await ctx.send("Pong! Ping time: {} ms; heartbeat time (Calculating)".format((start - msgtime).microseconds / 1000))
+        end = message.created_at
+        await message.edit(content="Pong! Ping time: {} ms; heartbeat time: {} ms".format((start - msgtime).microseconds / 1000, (end - msgtime).microseconds / 1000))
 
     @commands.command()
     async def togglechannel(self, ctx, toggle=""):
