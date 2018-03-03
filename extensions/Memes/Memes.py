@@ -38,7 +38,12 @@ and overall just more {7} than {1} was ever meant to be. goodbye.
     async def headpat(self, ctx):
         """Send someone a headpat"""
         await ctx.send("http://i.imgur.com/7V6gIIW.jpg")
-
+        
+    @commands.command()
+    async def blackalabi(self, ctx):
+        """Much regret"""
+        await ctx.send("http://i.imgur.com/JzFem4y.png")
+        
     #@commands.command(aliases=[])
     #async def rip(self, ctx):
 
