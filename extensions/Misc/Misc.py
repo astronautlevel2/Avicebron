@@ -13,7 +13,7 @@ class Misc:
 
     def __init__(self, bot):
         self.bot = bot
-        self.role_db = sqlite3.connect('Database/role.db')
+        self.role_db = sqlite3.connect('Databases/role.db')
         self.role_db_cursor = self.role_db.cursor()
 
         path = os.path.dirname(os.path.abspath(__file__))
@@ -143,15 +143,15 @@ class Misc:
         if table:
             roleid = self.role_db_cursor.execute("SELECT roleid FROM roles WHERE userid={}".format(user)).fetchone()
             if roleid:
-				role = discord.utils.get(ctx.guild.roles, id=roleid)
-				if role:
-					try:
-						color = discord.Colour(int(color, 16))
-						await discord.Client.edit_role(ctx.message.server, role, colour=color)
-					except ValueError:
-						await ctx.send("Invalid role colour")
-				else:
-					await ctx.send("Role not found")
+                role = discord.utils.get(ctx.guild.roles, id=roleid)
+                if role:
+                    try:
+                        color = discord.Colour(int(color, 16))
+                        await discord.Client.edit_role(ctx.message.server, role, colour=color)
+                    except ValueError:
+                        await ctx.send("Invalid role colour")
+                else:
+                    await ctx.send("Role not found")
             else:
                 await ctx.send("You dont have a custom role!")
         else:
