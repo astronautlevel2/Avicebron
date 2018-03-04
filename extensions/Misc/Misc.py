@@ -101,7 +101,7 @@ class Misc:
         if member:
             role = discord.utils.get(ctx.guild.roles, name=rolename)
             if role:
-                self.role_db.cursor().execute("CREATE TABLE IF NOT EXISTS roles (userid TEXT PRIMARY KEY, roleid TEXT)")
+                self.role_db.cursor().execute("CREATE TABLE IF NOT EXISTS roles (userid INT PRIMARY KEY, roleid INT)")
                 exists = self.role_db_cursor.execute("SELECT * FROM roles WHERE userid={}".format(member.id)).fetchone()
                 if exists:
                     return await ctx.send("Member already has custom role")
@@ -109,7 +109,7 @@ class Misc:
                 self.role_db.commit()
                 await ctx.send("Added role {} to member {}".format(role.name, member.name))
             else:
-                await ctx.send("Invalid roleid")
+                await ctx.send("Invalid role name")
         else:
             await ctx.send("Invalid member")
 
@@ -141,13 +141,14 @@ class Misc:
         table = self.role_db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name = 'roles'").fetchone()
 
         if table:
-            roleid = self.role_db_cursor.execute("SELECT roleid FROM roles WHERE userid={}".format(user)).fetchone()
+            roleid = self.role_db_cursor.execute("SELECT roleid FROM roles WHERE userid={}".format(user)).fetchone()[0]
             if roleid:
                 role = discord.utils.get(ctx.guild.roles, id=roleid)
                 if role:
                     try:
                         color = discord.Colour(int(color, 16))
-                        await discord.Client.edit_role(ctx.message.server, role, colour=color)
+                        await role.edit(colour=color)
+                        await ctx.send("Role colour changed")
                     except ValueError:
                         await ctx.send("Invalid role colour")
                 else:
