@@ -95,7 +95,7 @@ class Misc:
 
     @commands.has_permissions(manage_roles=True)
     @commands.command()
-    async def customrole(self, ctx, member, rolename):
+    async def customrole(self, ctx, member, *, rolename):
         """Connects a role to a member so they can use color(), as so: .customrole @member rolename"""
         member = get_user(ctx.message, member)
         if member:
