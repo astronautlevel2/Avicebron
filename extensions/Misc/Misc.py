@@ -135,8 +135,8 @@ class Misc:
             await ctx.send("Invalid member")
 
     @commands.command(aliases=["colour"])
-    async def color(self, ctx, color):
-        """Changes color of custom role, if able. Color is in hex, in format 0x..."""
+    async def color(self, ctx, value):
+        """Changes color of custom role, if able. Color is in hex, either as ###### or 0x######"""
         user = ctx.author.id
         table = self.role_db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name = 'roles'").fetchone()
 
@@ -146,15 +146,15 @@ class Misc:
                 role = discord.utils.get(ctx.guild.roles, id=roleid)
                 if role:
                     try:
-                        color = discord.Colour(int(color, 16))
-                        await role.edit(colour=color)
-                        await ctx.send("Role colour changed")
+                        value = discord.Colour(int(value, 16))
+                        await role.edit(colour=value)
+                        await ctx.send("Role {} changed".format(ctx.invoked_with))
                     except ValueError:
-                        await ctx.send("Invalid role colour")
+                        await ctx.send("Invalid", ctx.invoked_with)
                 else:
                     await ctx.send("Role not found")
             else:
-                await ctx.send("You dont have a custom role!")
+                await ctx.send("You don't have a custom role!")
         else:
             await ctx.send("No custom roles have been added yet")
 
