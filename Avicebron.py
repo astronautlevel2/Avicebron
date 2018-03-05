@@ -56,10 +56,6 @@ async def on_ready():
         try:
             channel = bot.get_channel(int(sys.argv[1]))
             await channel.send("Bot has restarted")
-            for guild in bot.guilds:
-                if guild.id != 366985144013291532:
-                    await channel.send("Left guild {}".format(guild.name))
-                    await guild.leave()
         except:
             pass
 
