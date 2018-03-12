@@ -92,17 +92,40 @@ class Misc:
                 await ctx.send("There are {} members in {}".format(len(channel.members), channel.name))
         else:
             await ctx.send("{} currently has {} members".format(ctx.guild.name, ctx.guild.member_count))
-
+            
     @commands.has_permissions(manage_roles=True)
     @commands.command()
-    async def customrole(self, ctx, member, *, rolename):
+    async def createcustomrole(self, ctx, member, *, rolename):
+        """Creates a custom role for a member, connecting it to them and enabling them to use colour/color as: .createcustomrole member rolename"""
+        member = get_user(ctx.message, member)
+        if member:
+            if ctx.author.top_role <= member.top_role:
+                if ctx.author.id != member.id:
+                    return await ctx.send("You cannot create a custom role for {}!".format(member))
+            self.role_db.cursor().execute("CREATE TABLE IF NOT EXISTS roles (userid INT PRIMARY KEY, roleid INT)")
+            exists = self.role_db_cursor.execute("SELECT * FROM roles WHERE userid={}".format(member.id)).fetchone()
+            if exists:
+                return await ctx.send("Member already has custom role")
+            toprole = member.top_role
+            newrole = await ctx.guild.create_role(name=rolename)
+            newrole.edit(position=toprole.position+1)
+            await member.add_roles(newrole)
+            self.role_db.cursor().execute("INSERT INTO roles VALUES(?, ?)", (member.id, newrole.id))
+            await ctx.send("Created role!")
+            
+    @commands.has_permissions(manage_roles=True)
+    @commands.command()
+    async def assigncustomrole(self, ctx, member, *, rolename):
         """Connects a role to a member so they can use color(), as so: .customrole @member rolename"""
         member = get_user(ctx.message, member)
         if member:
+            if ctx.author.top_role <= member.top_role:
+                if ctx.author.id != member.id:
+                    return await ctx.send("You cannot assign a custom role to {}!".format(member))
             role = discord.utils.get(ctx.guild.roles, name=rolename)
             if role:
                 self.role_db.cursor().execute("CREATE TABLE IF NOT EXISTS roles (userid INT PRIMARY KEY, roleid INT)")
-                exists = self.role_db_cursor.execute("SELECT * FROM roles WHERE userid={}".format(member.id)).fetchone()
+                exists = self.role_db_cursor.execute("SELECT roleid FROM roles WHERE userid={}".format(member.id)).fetchone()
                 if exists:
                     return await ctx.send("Member already has custom role")
                 self.role_db.cursor().execute("INSERT INTO roles VALUES(?, ?)", (member.id, role.id))
@@ -116,17 +139,25 @@ class Misc:
     @commands.has_permissions(manage_roles=True)
     @commands.command()
     async def removecustomrole(self, ctx, member):
-        """Removes custom roleid from member, if any exists"""
+        """Removes custom role from member, if any exists"""
         member = get_user(ctx.message, member)
         if member:
+            if ctx.author.top_role <= member.top_role:
+                if ctx.author.id != member.id:
+                    return await ctx.send("You cannot remove a custom role from {}!".format(member))
             table = self.role_db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name = 'roles'").fetchone()
-
             if table:
-                role = self.role_db_cursor.execute("SELECT roleid FROM roles WHERE userid={}".format(member.id))
-
-                if role:
+                roleid = self.role_db_cursor.execute("SELECT roleid FROM roles WHERE userid={}".format(member.id)).fetchone()
+                if roleid:
                     self.role_db_cursor.execute("DELETE from roles WHERE userid={}".format(member.id))
                     self.role_db.commit()
+                    role = discord.utils.get(ctx.guild.roles, id=roleid[0])
+                    if role:
+                        await member.remove_roles(role)
+                        await role.delete()
+                    else:
+                        await ctx.send("Role not found")
+                    await ctx.send("Removed custom role")
                 else:
                     await ctx.send("Member has no custom roles")
             else:
@@ -139,18 +170,17 @@ class Misc:
         """Changes color of custom role, if able. Color is in hex, either as ###### or 0x######"""
         user = ctx.author.id
         table = self.role_db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name = 'roles'").fetchone()
-
         if table:
-            roleid = self.role_db_cursor.execute("SELECT roleid FROM roles WHERE userid={}".format(user)).fetchone()[0]
+            roleid = self.role_db_cursor.execute("SELECT roleid FROM roles WHERE userid={}".format(user)).fetchone()
             if roleid:
-                role = discord.utils.get(ctx.guild.roles, id=roleid)
+                role = discord.utils.get(ctx.guild.roles, id=roleid[0])
                 if role:
                     try:
                         value = discord.Colour(int(value, 16))
                         await role.edit(colour=value)
                         await ctx.send("Role {} changed".format(ctx.invoked_with))
                     except ValueError:
-                        await ctx.send("Invalid", ctx.invoked_with)
+                        await ctx.send("Invalid " + ctx.invoked_with)
                 else:
                     await ctx.send("Role not found")
             else:
