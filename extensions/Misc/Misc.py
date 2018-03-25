@@ -94,7 +94,7 @@ class Misc:
             await ctx.send("{} currently has {} members".format(ctx.guild.name, ctx.guild.member_count))
             
     @commands.has_permissions(manage_roles=True)
-    @commands.command()
+    @commands.command(aliases=["addcustomrole","addrole","addcolor","customrole"])
     async def createcustomrole(self, ctx, member, *, rolename):
         """Creates a custom role for a member, connecting it to them and enabling them to use colour/color as: .createcustomrole member rolename"""
         member = get_user(ctx.message, member)
