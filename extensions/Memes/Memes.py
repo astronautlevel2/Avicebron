@@ -140,6 +140,8 @@ class Memes:
                      "I didn't think before I spoke a word so it just came out as something totally wrong, I don't hate anybody who is {}, just the community. "
                      "I like {}, just not the {} community. I'm sorry for all of this. All I'm asking for is a apology is all. I should have been thinking "
                      "before I spoke").format(*replacements)))
+
+    @commands.command()
     async def headpat(self, ctx):
         """Send someone a headpat"""
         await ctx.send("http://i.imgur.com/7V6gIIW.jpg")
