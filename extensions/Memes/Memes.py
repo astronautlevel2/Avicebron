@@ -151,8 +151,16 @@ class Memes:
         """Much regret"""
         await ctx.send("http://i.imgur.com/JzFem4y.png")
         
-    #@commands.command(aliases=[])
-    #async def rip(self, ctx):
+    @commands.command()
+    async def rip(self, ctx):
+        """F"""
+        msg = await ctx.send("Press F to pay respects.")
+        await msg.add_reaction("🇫")
+
+    @commands.command(aliases=['bt'])
+    async def blackalabitelegram(self, ctx):
+        """Much regret telegram edition"""
+        await ctx.send("https://imgur.com/t2FoObO")
 
 
 def setup(bot):
