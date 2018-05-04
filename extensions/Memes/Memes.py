@@ -21,12 +21,14 @@ class Memes:
         if len(replacements) < 8:
             replacements = replacements + original[len(replacements):]
 
-        await ctx.send(await commands.clean_content().convert(ctx,
-            ("y'know, i was trying to keep my cool and be a part of this {0}, but i cant force myself here any longer. "
-             "this isnt {1}. too much {2} shit, owned by a {3} and a former {3}, no {4}, "
-             "a {5} where people get warned for {6} when part of the spirit of {1} is {6}, "
-             "and overall just more {7} than {1} was ever meant to be. goodbye."
-             ).format(*replacements)))
+        await ctx.send(
+            await commands.clean_content(
+            ).convert(ctx,
+                      ("y'know, i was trying to keep my cool and be a part of this {0}, but i cant force myself here any longer. "
+                       "this isnt {1}. too much {2} shit, owned by a {3} and a former {3}, no {4}, "
+                       "a {5} where people get warned for {6} when part of the spirit of {1} is {6}, "
+                       "and overall just more {7} than {1} was ever meant to be. goodbye."
+                       ).format(*replacements)))
 
     @commands.command()
     async def lenny(self, ctx):
@@ -40,20 +42,21 @@ class Memes:
 
         Usage: [p]xk2
         """
-        await ctx.send(await commands.clean_content().convert(ctx,
-            ("Hello there @everyone, Hello there, this is my apology I guess, I'm sorry for acting quite vigorously in the drama post "
-             "screenshots that astronautlevel made in which I said \"suck a dick\" if it wasn't obvious I was stressed out, I know nobody "
-             "will listen to me now but PokeAcer is a good dude with good intents no he isn't going to steal your password and decrypt "
-             "it in 1000 years, bcrypt is already salted and about bcrypted client side we are working on this."
-             ))
-        )
+        await ctx.send(
+            await commands.clean_content(
+            ).convert(ctx,
+                      ("Hello there @everyone, Hello there, this is my apology I guess, I'm sorry for acting quite vigorously in the drama post "
+                       "screenshots that astronautlevel made in which I said \"suck a dick\" if it wasn't obvious I was stressed out, I know nobody "
+                       "will listen to me now but PokeAcer is a good dude with good intents no he isn't going to steal your password and decrypt "
+                       "it in 1000 years, bcrypt is already salted and about bcrypted client side we are working on this."
+                       )))
 
     @commands.cooldown(rate=3, per=10.0, type=commands.BucketType.channel)
     @commands.command(aliases=['xk'])
     async def xkyup(self, ctx, *, variant=""):
         """
         Prints the xkyup copypasta. Delimit arguments with ',' or pick one of the already defined variants.
-        Possible variants: fr, es, it, jp, de, pl, pt, nl, se, bees
+        Possible variants: fr, es, it, jp, de, pl, pt, nl, se, bees, srb
         Usage: [p]{xkyup|xk} [variant]
             where variant can also be of the form [are transgender, transgender person, transgender, Aurora, trans commmunity]
         """
@@ -123,29 +126,38 @@ class Memes:
                  "or who are dating a bee. I didn't think before I spoke a word so it just came out as something totally wrong, I don't "
                  "hate anybody who is a bee, just the hive. I like bees, just not the beehive. I'm sorry for all of this. All I'm asking "
                  "for is a apology is all. I should have been thinking before I spoke."
+                 ),
+            "srb":
+                ("Toliko mi je žao, bejah jebeni retard tako što izgovorih stvari zbog kojih ću izbući deblji kraj načiniti mnoge ljutim "
+                 "koji su, ili koji su u vezi sa trans ljudima. Nisam mislio pre no što sam prozborio reč i ispalo je totalno pogrešno, ne "
+                 "mrzim nikoga ko je trans, samo celokupnu zajednicu. Sviða mi se Aurora, samo ne trans zajednica. "
+                 "Sve što tražim je izvinjenje. Trebao sam razmisliti pre no što bilo šta rekoh."
                  )
-            }
+        }
         try:
             await ctx.send(xkyup[variant])
         except KeyError:
-            original = ["are transgender", "transgender person", "transgender", "Aurora", "trans commmunity"]
+            original = ["are transgender", "transgender person", "transgender", "Aurora", "trans"]
             replacements = [i.rstrip().lstrip() for i in variant.split(',')]
             del replacements[len(original):]
             if len(replacements) < len(original):
                 replacements = replacements + original[len(replacements):]
 
             await ctx.send(
-                await commands.clean_content().convert(ctx,
-                    ("I'm so sorry, I was a fucking retard for saying words that would get me in touble and anger lots of people who {} or who are dating {}. "
-                     "I didn't think before I spoke a word so it just came out as something totally wrong, I don't hate anybody who is {}, just the community. "
-                     "I like {}, just not the {} community. I'm sorry for all of this. All I'm asking for is a apology is all. I should have been thinking "
-                     "before I spoke").format(*replacements)))
+
+                await commands.clean_content(
+                ).convert(ctx,
+                          ("I'm so sorry, I was a fucking retard for saying words that would get me in touble and anger lots of people who {} or who are dating {}. "
+                           "I didn't think before I spoke a word so it just came out as something totally wrong, I don't hate anybody who is {}, just the community. "
+                           "I like {}, just not the {} community. I'm sorry for all of this. All I'm asking for is a apology is all. I should have been thinking "
+                           "before I spoke"
+                           ).format(*replacements)))
 
     @commands.command()
     async def headpat(self, ctx):
         """Send someone a headpat"""
         await ctx.send("http://i.imgur.com/7V6gIIW.jpg")
-        
+
     @commands.command()
     async def blackalabi(self, ctx):
         """Much regret"""
