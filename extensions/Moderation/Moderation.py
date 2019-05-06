@@ -10,7 +10,7 @@ from discord.ext import commands
 from Utilities.get_helper import get_user
 
 
-class Moderation:
+class Moderation(commands.cog):
 
     def __init__(self, bot):
         self.bot = bot

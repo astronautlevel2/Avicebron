@@ -9,7 +9,7 @@ from discord.ext import commands
 from Utilities.get_helper import get_channel, get_user
 
 
-class Misc:
+class Misc(commands.cog):
 
     def __init__(self, bot):
         self.bot = bot
